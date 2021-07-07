@@ -13,7 +13,7 @@ class Location(models.Model):
 
 class Petstore(models.Model):
     name = models.CharField(max_length=100)
-    location = models.OneToOneField(Location, on_delete=models.CASCADE)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -23,7 +23,7 @@ class Employee(models.Model):
     employee_name = models.CharField(max_length=100)
     email = models.EmailField()
     petstore = models.ForeignKey(Petstore, on_delete=models.CASCADE)
-    location = models.OneToOneField(Location, on_delete=models.CASCADE)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE)
 
 
 class Category(models.Model):
@@ -43,12 +43,12 @@ class Breed(models.Model):
 class Customer(models.Model):
     customer_name = models.CharField(max_length=100)
     email = models.EmailField()
-    location = models.OneToOneField(Location, on_delete=models.CASCADE)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE)
 
 
 class Sale(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, null=True)
     breed = models.ForeignKey(Breed, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     date = models.DateField()
