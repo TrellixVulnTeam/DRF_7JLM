@@ -13,12 +13,12 @@ router.register('categoryview', views.CategoryView, 'categoryview')
 router.register('breedview', views.BreedView, 'breedview')
 router.register('customerview', views.CustomerView, 'customerview')
 router.register('saleview', views.SaleView, 'saleview')
-
+router.register('registerview', views.RegisterView, 'registerview')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
-    path('gettoken/', TokenObtainPairView.as_view()),
+    path('login/', TokenObtainPairView.as_view()),
     path('refreshtoken/', TokenRefreshView.as_view()),
     path('verifytoken/', TokenVerifyView.as_view()),
 ]

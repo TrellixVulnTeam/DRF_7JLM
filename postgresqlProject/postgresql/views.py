@@ -4,12 +4,12 @@ from rest_framework import status
 from django.db.models import Q
 from .models import Location, Petstore, Category, Employee, Breed, Customer, Sale
 from .serializers import LocationSerializer, PetstoreSerializer, EmployeeSerializer, CategorySerializer, \
-    BreedSerializer, CustomerSerializer, SaleSerializer
+    BreedSerializer, CustomerSerializer, SaleSerializer, RegisterSerializer
 from .paginations import MyPageNumberPagination, MyCursorPagination, CustomPagination
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
-
+from django.contrib.auth.models import User
 
 class LocationView(viewsets.ModelViewSet):
     queryset = Location.objects.all()
@@ -397,3 +397,8 @@ class SaleView(viewsets.ModelViewSet):
     #     id = request.data.get('id')
     #     instance = self.queryset.get(id=id)
     #     instance.delete()
+
+
+class RegisterView(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = RegisterSerializer
