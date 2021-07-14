@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'postgresql.apps.PostgresqlConfig',
     'rest_framework',
+    'django_rest_passwordreset',
+    'django_extensions',
+    'newapp',
 ]
 
 MIDDLEWARE = [
@@ -134,3 +137,4 @@ SIMPLE_JWT = {
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

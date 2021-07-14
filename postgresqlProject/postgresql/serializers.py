@@ -1,44 +1,34 @@
 from rest_framework import serializers
 from .models import Location, Petstore, Category, Employee, Breed, Customer, Sale
 from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
+import re
+
 
 class LocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
         fields = '__all__'
 
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        representation['name'] = self.context['name']
-        return representation
 
-# create both; sending context
-# update retrieve both
-# serializer method change upper, float
 class PetstoreSerializer(serializers.ModelSerializer):
-    # location = LocationSerializer()
     class Meta:
         model = Petstore
         fields = '__all__'
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    # petstore = PetstoreSerializer()
-    name = serializers.PrimaryKeyRelatedField(source='petstore.name', read_only=True)
     class Meta:
         model = Category
-        fields = ['id', 'category_name', 'name', 'petstore']
-        depth = 2
+        fields = '__all__'
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
-    # name = serializers.CharField(source='employee_name')
     class Meta:
         model = Employee
         fields = '__all__'
-        # fields = ['id', 'empoyee_name', 'email', 'petstore', 'location']
 
 
 class BreedSerializer(serializers.ModelSerializer):
@@ -54,23 +44,34 @@ class CustomerSerializer(serializers.ModelSerializer):
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField()
-    password2 = serializers.CharField()
+    email = serializers.EmailField(
+        required=True,
+        validators=[UniqueValidator(queryset=User.objects.all())]
+    )
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    password2 = serializers.CharField(write_only=True, required=True)
     class Meta:
         model = User
         fields = ['username', 'password', 'email', 'password2']
 
     def validate(self, attrs):
-        print(attrs)
+        specialsym = ['!', '@', '#', '$', '%', '&']
+
+        if not re.search(r"[\d]+", attrs['password']):
+            raise serializers.ValidationError("The password must contain at least one digit")
+
+        if not re.search(r"[A-Z]+", attrs['password']):
+            raise serializers.ValidationError("The password must contain at least one uppercase character")
+
+        if not any(char in specialsym for char in attrs['password']):
+            raise serializers.ValidationError("The password must contain at least one special character")
+
         if attrs['password'] != attrs['password2']:
             raise serializers.ValidationError("Two passwords did not match")
+
         return attrs
 
     def create(self, validated_data):
-        # print(validated_data)
-        # user = User.objects.create_user(validated_data['username'], validated_data['email'], validated_data['password'])
-        # if validated_data['password'] != validated_data['password2']:
-        #     raise serializers.ValidationError("Two passwords did not match")
         user = User.objects.create(username=validated_data['username'], email=validated_data['email'])
         user.set_password(validated_data['password'])
         user.save()
@@ -82,8 +83,8 @@ class SaleSerializer(serializers.ModelSerializer):
         model = Sale
         fields = '__all__'
 
-    def create(self, validated_data):
-        return Sale.objects.create(**validated_data)
+    # def create(self, validated_data):
+    #     return Sale.objects.create(**validated_data)
 
 
     # def create(self, validated_data):
